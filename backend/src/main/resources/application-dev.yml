@@ -1,0 +1,23 @@
+# Zero-configuration profile (default): embedded H2 file database.
+# No MySQL installation or manual database setup required.
+# Data is persisted to ./data/feedbackdb.mv.db so it survives restarts.
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/feedbackdb;MODE=MySQL;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+logging:
+  level:
+    org.springframework.security: INFO

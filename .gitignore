@@ -1,0 +1,25 @@
+# Backend
+backend/target/
+backend/data/
+/data/
+*.class
+
+# Runtime artifacts
+*.pid
+*.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Env / secrets
+.env.local
+*.local
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

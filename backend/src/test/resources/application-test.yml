@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:feedbacktest;DB_CLOSE_DELAY=-1;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+
+app:
+  jwt:
+    secret: dGVzdC1zZWNyZXQta2V5LWZvci1mZWVkYmFjay1hcHAtMTIzNDU2Nzg5MGFiY2RlZg==
+    expiration-ms: 3600000
+  cors:
+    allowed-origins: http://localhost:5173
+  admin:
+    username: admin
+    email: admin@test.local
+    password: TestAdmin@123

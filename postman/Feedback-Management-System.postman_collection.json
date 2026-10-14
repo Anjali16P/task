@@ -1,0 +1,229 @@
+{
+  "info": {
+    "name": "Feedback Management System",
+    "description": "REST API collection for the Feedback Management System (Spring Boot + JWT).\n\nUsage:\n1. Set the {{baseUrl}} collection variable (default http://localhost:8080/api).\n2. Run 'Auth / Login (user)' or 'Auth / Login (admin)'. The token is captured automatically into {{token}}.\n3. Run the other requests.\n\nDefault admin credentials depend on the backend ADMIN_USERNAME / ADMIN_PASSWORD env vars.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "feedbackId",
+      "value": "1"
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"john\",\n  \"email\": \"john@example.com\",\n  \"password\": \"Password@123\",\n  \"confirmPassword\": \"Password@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login (user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('token', body.token);",
+                  "  pm.collectionVariables.set('userId', String(body.user.id));",
+                  "  console.log('Captured token for user', body.user.username);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"john\",\n  \"password\": \"Password@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('token', body.token);",
+                  "  console.log('Captured ADMIN token');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin@12345\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Current user (me)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Feedback",
+      "item": [
+        {
+          "name": "Get my feedback",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/feedback/my", "host": ["{{baseUrl}}"], "path": ["feedback", "my"] }
+          }
+        },
+        {
+          "name": "Create feedback",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('feedbackId', String(pm.response.json().id));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"message\": \"The application is easy to use and responsive.\"\n}" },
+            "url": { "raw": "{{baseUrl}}/feedback", "host": ["{{baseUrl}}"], "path": ["feedback"] }
+          }
+        },
+        {
+          "name": "Update my feedback",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"message\": \"Updated: the application is fast and reliable.\"\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/feedback/{{feedbackId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["feedback", "{{feedbackId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Feedback",
+      "item": [
+        {
+          "name": "List all feedback",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/admin/feedback", "host": ["{{baseUrl}}"], "path": ["admin", "feedback"] }
+          }
+        },
+        {
+          "name": "Get feedback by id",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/feedback/{{feedbackId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "feedback", "{{feedbackId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create feedback for user",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"message\": \"Feedback created by an administrator.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/feedback", "host": ["{{baseUrl}}"], "path": ["admin", "feedback"] }
+          }
+        },
+        {
+          "name": "Update feedback (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"message\": \"Edited by admin.\"\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/admin/feedback/{{feedbackId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "feedback", "{{feedbackId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete feedback (admin)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/admin/feedback/{{feedbackId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "feedback", "{{feedbackId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
